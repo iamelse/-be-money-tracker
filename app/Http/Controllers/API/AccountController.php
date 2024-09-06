@@ -9,6 +9,7 @@ use App\Http\Resources\AccountResource;
 use App\Models\Account;
 use Illuminate\Http\Response;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
@@ -18,10 +19,31 @@ class AccountController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $accounts = Account::where('user_id', Auth::user()->id)->get();
-        return $this->success(AccountResource::collection($accounts));
+        $query = Account::where('user_id', Auth::user()->id);
+
+        $search = $request->query('search_query', '');
+        if ($search !== '') {
+            $query->where(function ($query) use ($search) {
+                $query->where('account_name', 'like', '%'.$search.'%')
+                    ->orWhere('account_type', 'like', '%'.$search.'%');
+            });
+        }
+
+        $limit = $request->query('limit', 10);
+        $page = $request->query('page', 1);
+
+        $result = $query->orderByDesc('id')
+                        ->paginate($limit, ['*'], 'page', $page);
+
+        return $this->success([
+            'data' => AccountResource::collection($result->items()),
+            'total' => $result->total(),
+            'limit' => $result->perPage(),
+            'page' => $result->currentPage(),
+            'totalPages' => $result->lastPage(),
+        ]);
     }
 
     /**
