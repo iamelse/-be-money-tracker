@@ -11,7 +11,7 @@ class StoreAccountRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class StoreAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'exists:users,id',
             'account_name' => 'required|string|max:255',
             'account_type' => 'required|string|in:checking,savings,credit',
             'balance' => 'required|numeric|min:0',

@@ -52,16 +52,10 @@ class AccountController extends Controller
     public function store(StoreAccountRequest $request)
     {
         $validated = $request->validated();
+        $validated['user_id'] = Auth::user()->id;
+
         $account = Account::create($validated);
         return $this->success(new AccountResource($account), 'Account created successfully', Response::HTTP_CREATED);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Account $account)
-    {
-        return $this->success(new AccountResource($account));
     }
 
     /**
