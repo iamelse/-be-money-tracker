@@ -11,7 +11,7 @@ class UpdateTransactionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdateTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'account_id' => ['sometimes', 'exists:accounts,id'], // Optional: ensure it exists if provided
+            'amount' => ['sometimes', 'numeric'], // Optional: ensure it's numeric if provided
+            'transaction_date' => ['sometimes', 'date'], // Optional: ensure it's a valid date if provided
+            'category' => ['sometimes', 'string'], // Optional: ensure it's a string if provided
+            'description' => ['nullable', 'string'], // Optional: description must be a string if provided
         ];
     }
 }

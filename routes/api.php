@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AccountController;
+use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\Auth\LoginController;
 use App\Http\Controllers\API\Auth\LogoutController;
 use App\Http\Controllers\API\Auth\MeController;
@@ -24,4 +25,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('accounts/{account}', [AccountController::class, 'show'])->name('accounts.show');
     Route::put('accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
     Route::delete('accounts/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
+
+    Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
+    Route::put('transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+    Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 });
