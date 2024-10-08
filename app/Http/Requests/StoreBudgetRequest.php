@@ -11,7 +11,7 @@ class StoreBudgetRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreBudgetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => ['nullable', 'exists:users,id'],
+            'category' => ['required', 'string'],
+            'amount' => ['required', 'numeric'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date']
         ];
     }
 }

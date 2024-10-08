@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\API\AccountController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\BudgetController;
+
 use App\Http\Controllers\API\Auth\LoginController;
 use App\Http\Controllers\API\Auth\LogoutController;
 use App\Http\Controllers\API\Auth\MeController;
@@ -31,4 +33,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::put('transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
     Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+
+    Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
+    Route::post('budgets', [BudgetController::class, 'store'])->name('budgets.store');
+    Route::get('budgets/{budget}', [BudgetController::class, 'show'])->name('budgets.show');
+    Route::put('budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
+    Route::delete('budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
 });
