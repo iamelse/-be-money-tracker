@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Web\App\DashboardController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
@@ -16,4 +15,4 @@ Route::prefix('auth')->middleware('costum.guest')->group(function () {
 
 Route::post('/logout', [LogoutController::class, 'logout'])->name('web.logout');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['costum.auth'])->name('web.app.dashboard');
+include __DIR__.'/web/user.php';

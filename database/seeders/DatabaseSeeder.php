@@ -23,9 +23,33 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        DB::table('user_roles')->insert([
+            'name' => 'Master',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        DB::table('user_roles')->insert([
+            'name' => 'User',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
         DB::table('users')->insert([
+            'user_role_id' => 1,
             'name' => 'Lana Septiana',
             'email' => 'lana.septiana2@gmail.com',
+            'email_verified_at' => Carbon::now(),
+            'password' => bcrypt('password'),
+            'remember_token' => Str::random(10),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        DB::table('users')->insert([
+            'user_role_id' => 2,
+            'name' => 'Lana Septiana',
+            'email' => 'lana.septiana1@gmail.com',
             'email_verified_at' => Carbon::now(),
             'password' => bcrypt('password'),
             'remember_token' => Str::random(10),
