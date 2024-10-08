@@ -38,39 +38,44 @@
                                 @csrf
                                 <div class="mb-4">
                                     <label class="mb-2.5 block font-medium text-black dark:text-white">Email</label>
-                                    <div class="relative">
+                                    <div class="relative flex items-center">
                                         <input
                                             type="email"
                                             name="email"
+                                            value="{{ old('email') }}"
                                             placeholder="Enter your email"
                                             class="w-full rounded-lg border {{ $errors->has('email') ? 'border-danger' : 'border-stroke' }} bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                                             required
                                         />
-                                        @if ($errors->has('email'))
-                                            <span class="text-danger text-sm">{{ $errors->first('email') }}</span>
-                                        @endif
                                         <span class="absolute right-4 top-4">
                                             <i class='bx bx-sm {{ $errors->has('email') ? 'text-danger' : 'text-gray-500' }} bx-envelope'></i>
                                         </span>
                                     </div>
-                                </div>
+                                    <div class="h-5">
+                                        @if ($errors->has('email'))
+                                            <span class="text-danger text-sm">{{ $errors->first('email') }}</span>
+                                        @endif
+                                    </div>
+                                </div>                                
 
-                                <div class="mb-6">
+                                <div class="mb-4">
                                     <label class="mb-2.5 block font-medium text-black dark:text-white">Password</label>
-                                    <div class="relative">
+                                    <div class="relative flex items-center">
                                         <input
                                             type="password"
                                             name="password"
-                                            placeholder="6+ Characters, 1 Capital letter"
+                                            placeholder="6+ Characters"
                                             class="w-full rounded-lg border {{ $errors->has('password') ? 'border-danger' : 'border-stroke' }} bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-form-input dark:focus:border-primary"
                                             required
                                         />
-                                        @if ($errors->has('password'))
-                                            <span class="text-danger text-sm">{{ $errors->first('password') }}</span>
-                                        @endif
                                         <span class="absolute right-4 top-4">
                                             <i class='bx bx-sm {{ $errors->has('password') ? 'text-danger' : 'text-gray-500' }} bx-lock-alt'></i>
                                         </span>
+                                    </div>
+                                    <div class="h-5">
+                                        @if ($errors->has('password'))
+                                            <span class="text-danger text-sm">{{ $errors->first('password') }}</span>
+                                        @endif
                                     </div>
                                 </div>
 
