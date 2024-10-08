@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'costum.auth' => \App\Http\Middleware\CustomAuth::class,
+            'costum.guest' => \App\Http\Middleware\CustomGuest::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
