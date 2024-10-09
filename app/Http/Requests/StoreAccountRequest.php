@@ -24,8 +24,18 @@ class StoreAccountRequest extends FormRequest
         return [
             'user_id' => 'exists:users,id',
             'account_name' => 'required|string|max:255',
+            'brand' => 'required|string|max:255',
             'account_type' => 'required|string|in:checking,savings,credit',
-            'balance' => 'required|numeric|min:0',
+            'balance' => 'required|integer|min:0',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->has('balance')) {
+            $this->merge([
+                'balance' => (int) str_replace(['Rp ', '.', ','], ['', '', ''], $this->balance),
+            ]);
+        }
     }
 }

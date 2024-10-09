@@ -22,10 +22,20 @@ class UpdateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'brand' => 'required|string|max:255',
             'account_name' => 'required|string|max:255',
             'account_type' => 'required|string|in:checking,savings,credit',
-            'balance' => 'required|numeric|min:0',
+            'balance' => 'required|integer|min:0',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->has('balance')) {
+            $this->merge([
+                'balance' => (int) str_replace(['Rp ', '.', ','], ['', '', ''], $this->balance),
+            ]);
+        }
     }
 }

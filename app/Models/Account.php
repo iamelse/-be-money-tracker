@@ -15,6 +15,24 @@ class Account extends Model
         'id'
     ];
 
+    public function scopeFilter($query, $filters = [])
+    {
+        $q = $filters['q'] ?? null;
+        $perPage = $filters['perPage'] ?? 10;
+        $columns = $filters['columns'] ?? [];
+
+        return $query
+            ->when($q, function ($query) use ($q, $columns) {
+                $query->where(function ($subquery) use ($q, $columns) {
+                    foreach ($columns as $column) {
+                        $subquery->orWhere($column, 'LIKE', "%$q%");
+                    }
+                });
+            })
+            ->latest('created_at')
+            ->paginate($perPage);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
