@@ -30,7 +30,19 @@
       @include('partials.sidebar')
       <!-- ===== Sidebar End ===== -->
 
-      @yield('content')
+      <!-- ===== Content Area Start ===== -->
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+          <!-- ===== Header Start ===== -->
+          @include('partials.header')
+          <!-- ===== Header End ===== -->
+
+          @yield('content')
+      
+          <!-- ===== Footer Start ===== -->
+          
+          <!-- ===== Footer End ===== -->
+      </div>
+      <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
   </body>
