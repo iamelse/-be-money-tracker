@@ -3,12 +3,25 @@
 namespace App\Http\Controllers\Web\App;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTransactionRequest;
+use App\Http\Requests\UpdateTransactionRequest;
+use App\Models\Account;
+use App\Models\LedgerEntry;
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+    protected $transactionService;
+
+    public function __construct(TransactionService $transactionService)
+    {
+        $this->transactionService = $transactionService;
+    }
+    
     public function index(Request $request)
     {
         $filters = [
@@ -17,7 +30,7 @@ class TransactionController extends Controller
             'account_id' => $request->input('account_id', null),
             'columns' => ['amount', 'category', 'description']
         ];
-        
+
         $transactions = $this->_getFilteredTransactions($filters);
 
         return view('pages.transactions.index', [
@@ -31,60 +44,87 @@ class TransactionController extends Controller
 
     public function create()
     {
-        return view('transactions.create');
+        $accounts = Account::where('user_id', Auth::user()->id)->get();
+
+        return view('pages.transactions.create', [
+            'title' => 'New Transaction | CashFlow',
+            'accounts' => $accounts
+        ]);
     }
 
-    // Store a newly created resource in storage.
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'transaction_date' => 'required|date',
-            'category' => 'required|string|max:255',
-        ]);
+        try {
+            $this->transactionService->createTransaction([
+                'user_id' => Auth::user()->id,
+                'account_id' => $request->account_id,
+                'amount' => $request->amount,
+                'transaction_date' => $request->transaction_date,
+                'category' => $request->category,
+                'description' => $request->description,
+            ]);
 
-        Transaction::create([
-            'user_id' => auth()->id(),
-            'account_id' => $request->account_id,
-            'amount' => $request->amount,
-            'transaction_date' => $request->transaction_date,
-            'category' => $request->category,
-            'description' => $request->description,
-        ]);
-
-        return redirect()->route('transactions.index')->with('success', 'Transaction created successfully.');
+            return redirect()->route('web.app.transactions.create')->withToastSuccess('Transaction created successfully.');
+        } catch (\Throwable $th) {
+            return redirect()->route('web.app.transactions.create')->withToastError($th->getMessage());
+        }
     }
 
-    // Show the form for editing the specified resource.
+    /*
     public function edit(Transaction $transaction)
     {
-        return view('transactions.edit', compact('transaction'));
-    }
+        $transaction = Transaction::findOrFail($transaction->id);
+        $accounts = Account::where('user_id', Auth::user()->id)->get();
 
-    // Update the specified resource in storage.
-    public function update(Request $request, Transaction $transaction)
-    {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'transaction_date' => 'required|date',
-            'category' => 'required|string|max:255',
+        return view('pages.transactions.edit', [
+            'title' => 'Edit Transaction | CashFlow',
+            'transaction' => $transaction,
+            'accounts' => $accounts,
         ]);
-
-        $transaction->update($request->all());
-
-        return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
     }
 
-    // Remove the specified resource from storage.
+    public function update(UpdateTransactionRequest $request, $id)
+    {
+        try {
+            $transaction = Transaction::findOrFail($id);
+            $ledgerEntry = LedgerEntry::where('transaction_id', $id)->firstOrFail();
+
+            $balanceChange = $request->amount - $transaction->amount;
+
+            $this->transactionService->updateTransaction([
+                'user_id' => Auth::user()->id,
+                'account_id' => $request->account_id,
+                'amount' => $request->amount,
+                'transaction_date' => $request->transaction_date,
+                'category' => $request->category,
+                'description' => $request->description,
+                'ledger_id' => $ledgerEntry->id,
+            ], $transaction->id);
+
+            return redirect()->route('web.app.transactions.index')->withToastSuccess('Transaction updated successfully.');
+        } catch (\Throwable $th) {
+            return redirect()->route('web.app.transactions.edit', $id)->withToastError($th->getMessage());
+        }
+    }
+    */
+
     public function destroy(Transaction $transaction)
     {
-        $transaction->delete();
+        $transactionService = new TransactionService();
 
-        return redirect()->route('transactions.index')->with('success', 'Transaction deleted successfully.');
+        try {
+            $transactionService->deleteTransaction($transaction->id);
+            return redirect()->route('web.app.transactions.index')->with('success', 'Transaction deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('web.app.transactions.index')->with('error', 'Failed to delete transaction: ' . $e->getMessage());
+        }
     }
 
     private function _getFilteredTransactions($filters)
     {
-        return Transaction::where('user_id', Auth::user()->id)->filter($filters);
+        return Transaction::where('user_id', Auth::user()->id)
+            ->with('account')
+            ->whereIn('account_id', Auth::user()->accounts()->pluck('id'))
+            ->filter($filters);
     }
 }

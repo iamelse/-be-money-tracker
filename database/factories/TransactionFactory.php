@@ -21,8 +21,8 @@ class TransactionFactory extends Factory
         return [
             'user_id' => User::factory(),
             'account_id' => Account::factory(),
-            'amount' => $this->faker->randomFloat(2, -500, 500),
-            'transaction_date' => $this->faker->dateTimeThisYear(),
+            'amount' => $this->faker->numberBetween(10000, 200000),
+            'transaction_date' => $this->faker->date(),
             'category' => $this->faker->word,
             'description' => $this->faker->sentence,
         ];

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('account_id')->constrained('accounts');
-            $table->decimal('amount', 10, 2);
-            $table->dateTime('transaction_date');
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->bigInteger('amount');
+            $table->date('transaction_date');
             $table->string('category');
             $table->string('description')->nullable();
             $table->timestamps();

@@ -45,4 +45,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Account::class);
     }
+
+    public function ledger_entries()
+    {
+        return $this->hasMany(LedgerEntry::class);
+    }
 }

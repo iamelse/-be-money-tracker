@@ -22,11 +22,21 @@ class UpdateTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_id' => ['sometimes', 'exists:accounts,id'], // Optional: ensure it exists if provided
-            'amount' => ['sometimes', 'numeric'], // Optional: ensure it's numeric if provided
-            'transaction_date' => ['sometimes', 'date'], // Optional: ensure it's a valid date if provided
-            'category' => ['sometimes', 'string'], // Optional: ensure it's a string if provided
-            'description' => ['nullable', 'string'], // Optional: description must be a string if provided
+            'user_id' => 'sometimes|exists.users,id',
+            'account_id' => 'required|exists:accounts,id',
+            'amount' => 'required|integer',
+            'transaction_date' => 'required|date',
+            'category' => 'required|string',
+            'description' => 'required|string',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->has('amount')) {
+            $this->merge([
+                'amount' => (int) str_replace(['Rp ', '.', ','], ['', '', ''], $this->amount),
+            ]);
+        }
     }
 }
